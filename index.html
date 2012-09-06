@@ -1,16 +1,37 @@
 <!DOCTYPE HTML>
 <html>
+
     <head>
         <title>Cordova</title>
         <script type="text/javascript" charset="utf-8" src="js/Matrix.js"></script>
         <script type="text/javascript">
-            function doSomethingYo() {
-                alert("Whoop!");
-                alert("Thuis has defo changee");
+            function test() 
+            {
+                document.writeln("<p> TEST </p>");
+                
+                var A = new Matrix( 0,0,0,
+                                    1,1,1,
+                                    2,2,2 );
+                
+                document.write("<p>" + A.toString() + "</p>" );
+                
+                A.set(2,2,2,3,3,3,4,4,4);
+                document.writeln("<p>" + A + "</p>");
+                
+                A.toZero();
+                document.writeln("<p>" + A + "</p>");
+                
+                A.toOnes();
+                document.writeln("<p>" + A + "</p>");
+                
+                A.toIdentity();
+                document.writeln("<p>" + A + "</p>");
             }
         </script>
     </head>
-    <body onLoad="doSomethingYo()">
+    
+    <body onLoad="test()">
         <h1>Hello World</h1>
     </body>
+    
 </html>
