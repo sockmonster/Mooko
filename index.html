@@ -26,6 +26,16 @@
                 
                 A.toIdentity();
                 document.writeln("<p>" + A + "</p>");
+                
+                A.add(1,0,0, 0,1,0, 0,0,1);
+                document.write("<p>" + A + "</p>");
+                
+                A.subtr(1,0,0, 0,1,0, 0,0,1);
+                document.write("<p>" + A + "</p>");
+                
+                document.write("<p>" + A.equals(9,9,9, 9,9,9, 9,9,9) + "</p>");
+                
+                document.write("<p>" + A.equals(1,0,0, 0,1,0, 0,0,1) + "</p>");                
             }
         </script>
     </head>
