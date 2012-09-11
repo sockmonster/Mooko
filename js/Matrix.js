@@ -5,93 +5,132 @@ TODO: function to convert AffTrnsfrm to a format compatible w/ OpenGL
 */
 
 /*--- CONSTRUCTOR ---*/ 
-function Matrix(a11, a12, a13, a21, a22, a23, a31, a32, a33)
+function Matrix(mat)
 {
     // reusable vars
-    var i = -1;
-    var j = -1;
+    var i = -1, j = -1;
     
-    this.m = [ a11, a12, a13, 
-               a21, a22, a23, 
-               a31, a32, a33];
+    this.m = mat.m;
     
-    this.set = function(a11, a12, a13, a21, a22, a23, a31, a32, a33)
+    this.set = function(mat)
     {
-        this.m = [a11,a12,a13,  a21,a22,a23,  a31,a32,a33];
-        return "set(): what shall i return?";
+        this.m = mat.m;
+        return this;
     };
     
     this.toIdentity = function()
     {
         this.m = [1,0,0, 0,1,0, 0,0,1];
-        return "toIdentity(): what shall i return?";
+        return this;
     };
     
     this.toZero = function()
     {
         this.m = [0,0,0, 0,0,0, 0,0,0];
-        return "toZero(): what shall i return?";
+        return this;
     };
     
     this.toOnes = function()
     {
         this.m = [1,1,1, 1,1,1, 1,1,1];
-        return "toOnes(): what shall i return?";
+        return this;
     };
     
-    this.add = function()
+    this.add = function(mat)
     {
-        if(arguments.length == 9)
-        {
-            for(i=0 ; i < arguments.length; i++)
-                this.m[i] += arguments[i];
-            return this.m;
-        }
-        else
-            return false;
-
+        for(i=0 ; i < 9; i++)
+            this.m[i] += mat.m[i];
+        return this;
     };
     
     this.subtr = function()
     {
-        if(arguments.length === 9)
-        {
-            for(i=0 ; i < arguments.length; i++)
-                this.m[i] -= arguments[i];
-            return this.m;
-        }
-        else
-            return false;
+        for(i=0 ; i < 9; i++)
+            this.m[i] -= mat.m[i];
+        return this;
     };
     
-    this.mult = function()
+    this.mult = function(mat)
     {
-        return false;
+        var mtmp = [0,0,0, 0,0,0, 0,0,0];
+        
+        /*
+        i = 0;
+        while(i < 9)
+        {
+            mtmp[i + 0] = this.m[i]*mat.m[0] + this.m[i + 1]*mat.m[3] + this.m[i + 2]*mat.m[6];
+            mtmp[i + 1] = this.m[i]*mat.m[1] + this.m[i + 1]*mat.m[4] + this.m[i + 2]*mat.m[7];
+            mtmp[i + 2] = this.m[i]*mat.m[2] + this.m[i + 1]*mat.m[5] + this.m[i + 2]*mat.m[8];
+            i += 3;
+        }
+        */
+        mtmp[0] = this.m[0]*mat.m[0] + this.m[1]*mat.m[3] + this.m[2]*mat.m[6];
+        mtmp[1] = this.m[0]*mat.m[1] + this.m[1]*mat.m[4] + this.m[2]*mat.m[7];
+        mtmp[2] = this.m[0]*mat.m[2] + this.m[1]*mat.m[5] + this.m[2]*mat.m[8];
+        
+        mtmp[3] = this.m[3]*mat.m[0] + this.m[4]*mat.m[3] + this.m[5]*mat.m[6];
+        mtmp[4] = this.m[3]*mat.m[1] + this.m[4]*mat.m[4] + this.m[5]*mat.m[7];
+        mtmp[5] = this.m[3]*mat.m[2] + this.m[4]*mat.m[5] + this.m[5]*mat.m[8];
+        
+        mtmp[6] = this.m[6]*mat.m[0] + this.m[7]*mat.m[3] + this.m[8]*mat.m[6];
+        mtmp[7] = this.m[6]*mat.m[1] + this.m[7]*mat.m[4] + this.m[8]*mat.m[7];
+        mtmp[8] = this.m[6]*mat.m[2] + this.m[7]*mat.m[5] + this.m[8]*mat.m[8];
+        
+        this.m = mtmp;
+        return this;
     };
 
-    this.vectormult = function()
+    this.vector3mult = function(vec3)
     {
-        return false;
+        /*
+        var vtmp = [0,0,0];
+        
+        vtmp[0] = this.m[0]*vec3.x + this.m[1]*vec3.x + this.m[2]*vec3.x;
+        vtmp[1] = this.m[3]*vec3.y + this.m[4]*vec3.y  + this.m[5]*vec3.y;
+        vtmp[2] = this.m[6]*vec3.z + this.m[7]*vec3.z + this.m[8]*vec3.z;
+        return new Vector3( { x:vtmp[0], y:vtmp[1], z:vtmp[2] } );
+        */
     };
 
-    this.scalarmult = function()
+    this.scalarmult = function(lamda)
     {
-        return false;
+        for(i=0 ; i < 9; i++)
+            this.m[i] *= lamda;
+        return this;
     };
 
-    this.div = function()
+    this.scalardiv = function(lamda)
     {
-        return false;
+        if(lamda !== 0.0)
+        {
+            for(i=0 ; i < 9; i++)
+                this.m[i] /= lamda;
+            return this;
+        }
     };
 
-    this. transpose = function()
+    this.transpose = function()
     {
-        return false;
+        var tmp = this.m[1];
+        this.m[1] = this.m[3];
+        this.m[3] = tmp; 
+        
+        tmp = this.m[2];
+        this.m[2] = this.m[6];
+        this.m[6] = tmp; 
+        
+        tmp = this.m[5];
+        this.m[5] = this.m[7];
+        this.m[7] = tmp;
+        
+        return this;
     };
     
     this.det = function()
     {
-        return false;
+        return  ( this.m[0] * (this.m[4]*this.m[8] - this.m[5]*this.m[7]) ) - 
+                ( this.m[1] * (this.m[3]*this.m[8] - this.m[5]*this.m[6]) ) +
+                ( this.m[2] * (this.m[3]*this.m[7] - this.m[4]*this.m[6]) );
     };
     
     this.invert = function()
@@ -99,13 +138,13 @@ function Matrix(a11, a12, a13, a21, a22, a23, a31, a32, a33)
         return false;
     };
 
-    this.equals = function()
+    this.equals = function(mat)
     {
-        var valid = (arguments.length === 9);
+        var valid = true;
         i = 0;
         while(valid === true && i < 9)
         {
-            valid &= (this.m[i] === arguments[i]);
+            valid &= (this.m[i] === mat[i]);
             i++;
         }
         return valid;

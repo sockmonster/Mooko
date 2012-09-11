@@ -9,33 +9,44 @@
             {
                 document.writeln("<p> TEST </p>");
                 
-                var A = new Matrix( 0,0,0,
-                                    1,1,1,
-                                    2,2,2 );
+                var A = new Matrix( { m: [0,0,0, 1,1,1, 2,2,2] } );
+                var B = new Matrix( { m: [2,2,2, 3,2,3, 4,3,4] } );
                 
-                document.write("<p>" + A.toString() + "</p>" );
+                document.write("<p>" + A + "</p>" );
                 
-                A.set(2,2,2,3,3,3,4,4,4);
+                document.write("<p>" + B  + "</p>");
+                document.write("<p>" + B.transpose()  + "</p>");
+                
+                A.set(new Matrix( { m: [5,5,5, 3,3,3, 1,1,1] } ) );
                 document.writeln("<p>" + A + "</p>");
                 
-                A.toZero();
-                document.writeln("<p>" + A + "</p>");
+                document.writeln("<p>" +  A.toZero() + "</p>");
                 
-                A.toOnes();
-                document.writeln("<p>" + A + "</p>");
+                document.writeln("<p>" + A.toOnes() + "</p>");
+                
+                document.writeln("<p>" + A.toIdentity() + "</p>");
+                
+                A.add(B);
+                document.write("<p>" + A + "</p>");
+                
+                A.subtr(B);
+                document.write("<p>" + A + "</p>");
                 
                 A.toIdentity();
-                document.writeln("<p>" + A + "</p>");
+                document.write("<p>" + A.equals(B.toIdentity()) + "</p>");
                 
-                A.add(1,0,0, 0,1,0, 0,0,1);
-                document.write("<p>" + A + "</p>");
+                document.write("<p>" + A.scalarmult(2)  + "</p>");
                 
-                A.subtr(1,0,0, 0,1,0, 0,0,1);
-                document.write("<p>" + A + "</p>");
+                A.m = [1,0,0, 0,1,0, 0,0,1];
+                B.m = [1,0,0, 0,1,0, 0,0,1];
+                document.write("<p>" + A.mult(B)  + "</p>");
                 
-                document.write("<p>" + A.equals(9,9,9, 9,9,9, 9,9,9) + "</p>");
+                A.m = [1,2,4, 2,5,8, 7,8,9];
+                B.m = [4,4,2, 3,7,1, 2,1,8];
+                document.write("<p>" + A.mult(B)  + "</p>");
                 
-                document.write("<p>" + A.equals(1,0,0, 0,1,0, 0,0,1) + "</p>");                
+                A.set(new Matrix ( {m: [-2,2,3, -1,1,3, 2,0,-1] } ));
+                document.write("<p>" + "det = " + A.det(B)  + "</p>");
             }
         </script>
     </head>
