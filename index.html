@@ -9,15 +9,15 @@
             {
                 document.writeln("<p> TEST </p>");
                 
-                var A = new Matrix( { m: [0,0,0, 1,1,1, 2,2,2] } );
-                var B = new Matrix( { m: [2,2,2, 3,2,3, 4,3,4] } );
+                var A = new Matrix3( { m: [0,0,0, 1,1,1, 2,2,2] } );
+                var B = new Matrix3( { m: [2,2,2, 3,2,3, 4,3,4] } );
                 
                 document.write("<p>" + A + "</p>" );
                 
                 document.write("<p>" + B  + "</p>");
                 document.write("<p>" + B.transpose()  + "</p>");
                 
-                A.set(new Matrix( { m: [5,5,5, 3,3,3, 1,1,1] } ) );
+                A.setTo( { m: [5,5,5, 3,3,3, 1,1,1] } );
                 document.writeln("<p>" + A + "</p>");
                 
                 document.writeln("<p>" +  A.toZero() + "</p>");
@@ -29,24 +29,26 @@
                 A.add(B);
                 document.write("<p>" + A + "</p>");
                 
-                A.subtr(B);
+                A.subtract(B);
                 document.write("<p>" + A + "</p>");
                 
                 A.toIdentity();
                 document.write("<p>" + A.equals(B.toIdentity()) + "</p>");
                 
-                document.write("<p>" + A.scalarmult(2)  + "</p>");
+                A.toIdentity();
+                document.write("<p>" + A.scalarMultiply(2) + "</p>");
                 
                 A.m = [1,0,0, 0,1,0, 0,0,1];
                 B.m = [1,0,0, 0,1,0, 0,0,1];
-                document.write("<p>" + A.mult(B)  + "</p>");
+                document.write("<p>" + A.multiply(B) + "</p>");
                 
                 A.m = [1,2,4, 2,5,8, 7,8,9];
                 B.m = [4,4,2, 3,7,1, 2,1,8];
-                document.write("<p>" + A.mult(B)  + "</p>");
+                document.write("<p>" + A.multiply(B)  + "</p>");
                 
-                A.set(new Matrix ( {m: [-2,2,3, -1,1,3, 2,0,-1] } ));
-                document.write("<p>" + "det = " + A.det(B)  + "</p>");
+                A.setTo( { m: [-2,2,3, -1,1,3, 2,0,-1] } );
+                
+                document.write("<p>" + "det = " + A.determinant(B)  + "</p>");
             }
         </script>
     </head>
