@@ -1,12 +1,11 @@
-/* 
-TODO: implement standard Matrix 3D functions + operations
-TODO: implement relevant rotation functions - ASK OLI
-TODO: function = convert AffTrnsfrm to a format compatible w/ OpenGL
-      Matrix3 to Matrix4 (embed Mat3 into top L corner of Mat4 identity matrix) 
-TODO: filter/map function (for fun!)
-TODO: look up List Comprehensions JavaScript
-TODO: map function and pass these operations in as function
-*/
+/* ******** ******** ******** */
+/*      PRIVATE SECTION       */
+/* ******** ******** ******** */
+// empty!
+
+/* ******** ******** ******** */
+/*       PUBLIC SECTION       */
+/* ******** ******** ******** */
 function Matrix3(mat) 
 {   
     this.m = mat.m;
@@ -72,15 +71,13 @@ function Matrix3(mat)
     };
 
     this.transpose = function() {
-        var mtmp = this.m;
-        
+        var mtmp = this.m;     
         mtmp[1] = this.m[3];
         mtmp[3] = this.m[1];
         mtmp[2] = this.m[6];
         mtmp[6] = this.m[2];    
         mtmp[5] = this.m[7];
-        mtmp[7] = this.m[5];
-        
+        mtmp[7] = this.m[5];    
         return new Matrix3( { m : mtmp } );
     };
     
@@ -90,10 +87,49 @@ function Matrix3(mat)
                 ( this.m[2] * (this.m[3]*this.m[7] - this.m[4]*this.m[6]) );
     };
     
+    this.ajugate = function() {
+        var mT = this.transpose();
+        var mcftmp = [];
+        mcftmp[0] = (mT.m[4] * mT.m[8]) - (mT.m[5] * mT.m[7]);
+        mcftmp[1] = (mT.m[3] * mT.m[8]) - (mT.m[5] * mT.m[6]);
+        mcftmp[2] = (mT.m[3] * mT.m[7]) - (mT.m[4] * mT.m[6]);
+        mcftmp[3] = (mT.m[1] * mT.m[8]) - (mT.m[2] * mT.m[7]);
+        mcftmp[4] = (mT.m[0] * mT.m[8]) - (mT.m[2] * mT.m[6]);
+        mcftmp[5] = (mT.m[0] * mT.m[7]) - (mT.m[1] * mT.m[6]);    
+        mcftmp[6] = (mT.m[1] * mT.m[5]) - (mT.m[2] * mT.m[4]);
+        mcftmp[7] = (mT.m[0] * mT.m[5]) - (mT.m[2] * mT.m[3]);
+        mcftmp[8] = (mT.m[0] * mT.m[4]) - (mT.m[1] * mT.m[3]);
+        var cofactorMatrix = new Matrix3( { m : mcftmp } );
+        var mask = new Matrix3( { m : [+1, -1, +1, -1, +1, -1, +1, -1, +1] } );
+        return cofactorMatrix.multiply(mask);
+    };
+    
     this.invert = function() {
-        return false;
+        var aj = this.ajugate();
+        return aj.scalarMultiply(1 / this.determinant());
     };
 
+    this.toOpenGL = function() {
+        var mtmp = [];
+        mtmp[0] = this.m[0];
+        mtmp[1] = this.m[1];
+        mtmp[2] = this.m[2];
+        mtmp[3] = 0;   
+        mtmp[4] = this.m[3];
+        mtmp[5] = this.m[4];
+        mtmp[6] = this.m[5];
+        mtmp[7] = 0;
+        mtmp[8] = this.m[6];
+        mtmp[9] = this.m[7];
+        mtmp[10] = this.m[8];
+        mtmp[11] = 0;
+        mtmp[12] = 0;
+        mtmp[13] = 0;
+        mtmp[14] = 0;
+        mtmp[15] = 1;
+        return mtmp;
+    }
+    
     this.equals = function(mat) {
         var valid = true;
         var i = 0;
