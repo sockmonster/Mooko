@@ -1,77 +1,41 @@
-function Vector2(vec) {
-    /* ******** ******** ******** */
-    /*      PRIVATE SECTION       */
-    /* ******** ******** ******** */
-    // empty!
+var Vector = {
+    add: function(A, B) {
+        return [A[0] + B[0], A[1] + B[1], 0, 1];
+    },
     
-    /* ******** ******** ******** */
-    /*       PUBLIC SECTION       */
-    /* ******** ******** ******** */
-    this.x = typeof vec === 'undefined' ? 0 : vec.x;
-    this.y = typeof vec === 'undefined' ? 0 : vec.y;
+    subtract: function(A, B) {
+        return [A[0] - B[0], A[1] - B[1], 0, 1];
+    },
     
-    Vector2.prototype.setTo = function(vec) {
-        this.x = vec.x;
-        this.y = vec.y;
-    };
-        
-    Vector2.prototype.add = function(vec) {
-        return new Vector2({
-            x: this.x + vec.x, 
-            y: this.y + vec.y
-        });
-    };
-        
-    Vector2.prototype.subtract = function(vec) {
-        return new Vector2({
-            x: this.x - vec.x,
-            y: this.y - vec.y
-        });
-    };
-        
-    Vector2.prototype.multiply = function(vec) {
-        return new Vector2({
-            x: this.x*vec.x,
-            y: this.y*vec.y
-        });
-    };
-        
-    Vector2.prototype.divide = function(vec) {
-        return new Vector2({
-            x: this.x/vec.x,
-            y: this.y/vec.y
-        });
-    };
-        
-    Vector2.prototype.dotProduct = function(vec) {
-        return this.x*vec.x + this.y*vec.y;
-    };
-        
-    Vector2.prototype.distanceTo = function(vec) {
-        var xDist = vec.x - this.x;
-        var yDist = vec.y - this.y;
-        
-        return Math.sqrt(xDist*xDist + yDist*yDist);
-    };
-        
-    Vector2.prototype.normalised = function() {
-        var length = this.length();
-        return this.div(length, length);
-    };
-        
-    Vector2.prototype.length = function() {
-        return Math.sqrt(this.x*this.x + this.y*this.y);
-    };
-        
-    Vector2.prototype.lengthSquared = function() {
-        return this.x*this.x + this.y*this.y;
-    };
-        
-    Vector2.prototype.lerp = function(delta) {
-        // TODO: implement this!
-    };
-        
-    Vector2.prototype.toString = function() {
-        return "[" + this.x + ", " + this.y +"]";
-    };
-}
+    scalarMultiply: function(A, s) {
+        return [A[0]*s, A[1]*s, 0, 1];
+    },
+    
+    scalarDivide: function(A, s) {
+        return [A[0]/s, A[1]/s, 0, 1];
+    },
+    
+    dotProduct: function(A, B) {
+        return A[0]*B[0] + A[1]*B[1];
+    },
+    
+    negate: function(A) {
+        return [-A[0], -A[1], 0, 1];
+    },
+    
+    lengthSquared: function(A) {
+        return A[0]*A[0] + A[1]*A[1];
+    },
+    
+    length: function(A) {
+        return Math.sqrt(this.lengthSquared(A));
+    },
+    
+    normalised: function(A) {
+        return this.scalarDivide(A, length(A));
+    },
+    
+    distance: function(A, B) {
+        return this.length(this.subtract(A, B));
+    }
+};
