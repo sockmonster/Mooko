@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Vector.js Tests</title>
+        <link rel="stylesheet" href="qunit-1.10.0.css">
+    </head>
+    <body>
+        <div id="qunit"></div>
+        <script src="qunit-1.10.0.js"></script>
+        <script src="../Vector.js"></script>
+        <script>
+            test( "Add()", function() {
+                var A = [4, 5];
+                var B = [7, 8];
+                var C = Vector.add(A, B);
+                
+                ok( Vector.equals(Vector.add(A, B), [11, 13]), "Passed!" );
+            });
+        </script>
+    </body>
+</html>
