@@ -1,5 +1,5 @@
 /******************************************************************************
- * MATRIX CONVENTIONS TO DOCUMENT
+ * MATRIX CONVENTIONS TO POSSIBLY DOCUMENT
  * 
  * We create one variable 'Matrix' to attach all our handler functions. 
  * It is treated like a 'static class'.
