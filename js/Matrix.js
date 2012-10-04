@@ -30,9 +30,9 @@ Matrix.toOnes = function() {
 Matrix.embed = function(A3x3) {
     // Embed a 3x3 matrix in top L corner of a 4x4 identity matrix.
     var A4x4 = Matrix.toIdentity();
-    A4x4[0] = A3x3[0];  A4x4[1]  = A3x3[1];  A4x4[2]  = A3x3[2]; 
-    A4x4[5] = A3x3[4];  A4x4[6]  = A3x3[5];  A4x4[7]  = A3x3[6];
-    A4x4[9] = A3x3[7];  A4x4[10] = A3x3[8];  A4x4[11] = A3x3[9];
+    A4x4[0] = A3x3[0];  A4x4[1] = A3x3[1];  A4x4[2]  = A3x3[2]; 
+    A4x4[4] = A3x3[3];  A4x4[5] = A3x3[4];  A4x4[6]  = A3x3[5];
+    A4x4[8] = A3x3[6];  A4x4[9] = A3x3[7];  A4x4[10] = A3x3[8];
     return A4x4;
 };
 
@@ -43,6 +43,36 @@ Matrix.toWebGL = function(A) {
 /****************
  *  OPERATIONS  *
  ****************/
+Matrix.add3x3 = function(A, B) {
+    for(var i=0 ; i < 9; i++)
+        A[i] += B[i];
+    return A;
+};
+
+Matrix.add4x4 = function(A, B) {
+    for(var i=0 ; i < 16; i++)
+        A[i] += B[i];
+    return A;
+};
+
+Matrix.subtract3x3 = function(A, B) {
+    for(var i=0 ; i < 9; i++)
+        A[i] -= B[i];
+    return A;
+};
+
+Matrix.subtract4x4 = function(A, B) {
+    for(var i=0 ; i < 16; i++)
+        A[i] -= B[i];
+    return A;
+};
+
+Matrix.scalarMultiply = function(A, lamda) {
+    for(var i=0 ; i < 9; i++)
+        A[i] *= lamda;
+    return A;
+};
+
 Matrix.multiply3x3 = function(A, B) {
     var mtmp = [];
     mtmp[0] = A[0]*B[0] + A[1]*B[3] + A[2]*B[6];
@@ -80,40 +110,17 @@ Matrix.multiply4x4 = function(A, B) {
     mtmp[13] = A[12]*B[1] + A[13]*B[5] + A[14]*B[9]  + A[15]*B[13];
     mtmp[14] = A[12]*B[2] + A[13]*B[6] + A[14]*B[10] + A[15]*B[14];
     mtmp[15] = A[12]*B[3] + A[13]*B[7] + A[14]*B[11] + A[15]*B[15];
+    return mtmp;
 };
 
-Matrix.scalarMultiply = function(A, lamda) {
-    for(var i=0 ; i < 9; i++)
-        A[i] *= lamda;
-    return A;
-};
-
-Matrix.add3x3 = function(A, B) {
-    for(var i=0 ; i < 9; i++)
-        A[i] += B[i];
-    return A;
-};
-
-Matrix.add4x4 = function(A, B) {
-    for(var i=0 ; i < 16; i++)
-        A[i] += B[i];
-    return A;
-};
-
-Matrix.subtract3x3 = function(A, B) {
-    for(var i=0 ; i < 9; i++)
-        A[i] -= B[i];
-    return A;
-};
-
-Matrix.subtract4x4 = function(A, B) {
-    for(var i=0 ; i < 16; i++)
-        A[i] -= B[i];
-    return A;
+Matrix.determinant3x3 = function(A) {
+    return  ( A[0] * (A[4]*A[8] - A[5]*A[7]) ) - 
+            ( A[1] * (A[3]*A[8] - A[5]*A[6]) ) +
+            ( A[2] * (A[3]*A[7] - A[4]*A[6]) );
 };
 
 /* THE BELOW ARE ALL STILL 3X3 */
-Matrix.transpose = function(A) {
+Matrix.transpose3x3 = function(A) {
     var mtmp = A;
     mtmp[1] = A[3];
     mtmp[3] = A[1];
@@ -122,12 +129,6 @@ Matrix.transpose = function(A) {
     mtmp[5] = A[7];
     mtmp[7] = A[5];
     return mtmp;
-};
-
-Matrix.determinant = function(A) {
-    return  ( A[0] * (A[4]*A[8] - A[5]*A[7]) ) - 
-            ( A[1] * (A[3]*A[8] - A[5]*A[6]) ) +
-            ( A[2] * (A[3]*A[7] - A[4]*A[6]) );
 };
 
 Matrix.ajugate = function(A) {

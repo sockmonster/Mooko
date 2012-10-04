@@ -6,26 +6,82 @@
         <link rel="stylesheet" href="qunit-1.10.0.css">
     </head>
     <body>
-        <div id="qunit"></div>
+ <div id="qunit"></div>
         <script src="qunit-1.10.0.js"></script>
         <script src="../Matrix.js"></script>
         
         <script>
         
+        test("setTo()", function() {
+            var A = Matrix.setTo( [6,4,2,0, 1,0,3,4, 0,4,5,7, 9,1,6,3] );
+            ok( Matrix.equals(A, [6,4,2,0, 1,0,3,4, 0,4,5,7, 9,1,6,3] ), "setTo() test!"); 
+        });
+        
+        test("toIdentity()", function() {
+            var I = Matrix.toIdentity();
+            ok( Matrix.equals(I, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]), "toIndentity() test!"); 
+        });
+        
+        test("toZero()", function() {
+            var A = Matrix.toZero();
+            ok( Matrix.equals(A, [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]), "toZero() test!"); 
+        });
+        
+        test("toOnes()", function() {
+            var A = Matrix.toOnes();
+            ok( Matrix.equals(A, [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1] ), "toOnes() test!"); 
+        });
+        
+        test("embed()", function() {
+            var A = Matrix.setTo( [9,9,9, 9,9,9, 9,9,9] );
+            var B = Matrix.embed(A);
+            ok( Matrix.equals(B, [9,9,9,0, 9,9,9,0, 9,9,9,0, 0,0,0,1] ), "embed() test!"); 
+        });
+        
         test("add3x3()", function() {
-            var A = [2, 4, 0, 7, 1, 0, 9, 0, 1];
-            var B = [1, 2, 8, 0, 5, 4, 6, 7, 1];
-            var C = [3, 6, 8, 7, 6, 4, 15, 7, 2];
-            ok( Matrix.equals(Matrix.add3x3(A, B), C), "add() failed!"); 
+            var A = [2,4,0, 7,1,0, 9,0,1];
+            var B = [1,2,8, 0,5,4, 6,7,1];
+            var C = [3,6,8, 7,6,4, 15,7,2];
+            ok( Matrix.equals(Matrix.add3x3(A, B), C), "add3x3() test!"); 
+        });
+        
+        test("add4x4()", function() {
+            var A = [2,4,0,3, 7,1,0,4, 9,0,1,5, 1,2,3,4];
+            var B = [1,2,8,5, 0,5,4,5, 6,7,1,4, 3,2,1,5];
+            var C = [3,6,8,8, 7,6,4,9, 15,7,2,9, 4,4,4,9];
+            ok( Matrix.equals(Matrix.add4x4(A, B), C), "add4x4() test!"); 
         });
         
         test("multiply3x3()", function() {
-            var A = [6, 4, 2, 1, 0, 3, 0, 4, 5];
-            var B = [2, 3, 4, 6, 7, 0, 1, 0, 9];
-            var C = [38, 46, 42, 5, 3, 31, 29, 28, 45];
-            ok( Matrix.equals(Matrix.multiply3x3(A, B), C), "mulitply() failed!"); 
+            var A = [6,4,2, 1,0,3, 0,4,5];
+            var B = [2,3,4, 6,7,0, 1,0,9];
+            var C = [38,46,42, 5,3,31, 29,28,45];
+            ok( Matrix.equals(Matrix.multiply3x3(A, B), C), "mulitply3x3() test!"); 
+        });
+        
+        test("multiply4x4()", function() {
+            var A = [6,4,2,3, 1,0,3,7, 0,6,4,8, 5,2,7,8];
+            var B = [2,3,4,5, 6,7,0,8, 1,0,9,6, 8,6,1,8];
+            var C = [62,64,45,98, 61,45,38,79, 104,90,44,136, 93,77,91,147];
+            ok( Matrix.equals(Matrix.multiply4x4(A, B), C), "mulitply4x4() test!");
+        });
+        
+        test("determinant3x3()", function() {
+            var A = [6,4,2, 1,0,3, 0,4,5];
+            var detA = Matrix.determinant3x3(A);
+            var B = [8,3,4, 6,7,0, 8,0,9];
+            var detB = Matrix.determinant3x3(B);
+            ok( detA === -84 && detB === 118, "determinant() test!");
+        });
+        
+        test("transpose3x3()", function() {
+            // NOT WORKING - NEED TO LOOK INTO THIS!!
+            var A = [6,4,2, 1,0,3, 0,4,5];
+            var At = [6,1,0, 4,0,4, 2,3,5];
+            ok( Matrix.equals(Matrix.transpose3x3(A), At), "transpose3x3() test!");
         });
         
         </script>
+        
     </body>
 </html>
