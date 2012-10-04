@@ -9,7 +9,7 @@
 var Matrix = {}; 
 
 /***********************
- *  SETTER FUNCTIONS  *
+ *  FACTORY FUNCTIONS  *
  ***********************/
 Matrix.setTo = function(A) {
     return A;
