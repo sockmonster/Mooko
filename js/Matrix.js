@@ -1,79 +1,51 @@
-/******************************************************************************
- * MATRIX CONVENTIONS TO POSSIBLY DOCUMENT
+/**
+ * Matrix3 & Matrix4
  * 
- * We create one variable 'Matrix' to attach all our handler functions. 
- * It is treated like a 'static class'.
- * All matrices assumed to be 4D i.e. a 3D matrix embedded in a 4x4 identity.
- * All matrices stored in flattened array form.
- ******************************************************************************/
-var Matrix = {}; 
-
-/***********************
- *  FACTORY FUNCTIONS  *
- ***********************/
-Matrix.setTo = function(A) {
+ * > We create variables to attach our handler functions. 
+ * > 3x3 and 4x4 have separate implementations. Treated like 'static' classes.
+ * > All matrices stored as flattened arrays.
+ * > For efficiency, all functions are entirely mathematical. No safety checking 
+ *   is done inside functions. The responsibility is on the programmer to pass 
+ *   mathematically sensible parameter values, correctly arranged and formatted.
+ *   e.g. invert() asumes the passed matrix is invertible.
+ */
+/* ***************************** MATRIX 3x3 ******************************** */
+var Matrix3 = {}; 
+/* ********************* *
+ *   FACTORY FUNCTIONS   *
+ * ********************* */
+Matrix3.setTo = function(A) {
     return A;
 };
-
-Matrix.toIdentity = function() {
-    return [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+Matrix3.toIdentity = function() {
+    return [1,0,0, 0,1,0, 0,0,1];
+};  
+Matrix3.toZero = function() {
+    return [0,0,0, 0,0,0, 0,0,0];
 };
-    
-Matrix.toZero = function() {
-    return [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0];
-};
-
-Matrix.toOnes = function() {
-   return [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1];
+Matrix3.toOnes = function() {
+   return [1,1,1, 1,1,1, 1,1,1];
 };
 
-Matrix.embed = function(A3x3) {
-    // Embed a 3x3 matrix in top L corner of a 4x4 identity matrix.
-    var A4x4 = Matrix.toIdentity();
-    A4x4[0] = A3x3[0];  A4x4[1] = A3x3[1];  A4x4[2]  = A3x3[2]; 
-    A4x4[4] = A3x3[3];  A4x4[5] = A3x3[4];  A4x4[6]  = A3x3[5];
-    A4x4[8] = A3x3[6];  A4x4[9] = A3x3[7];  A4x4[10] = A3x3[8];
-    return A4x4;
-};
-
-Matrix.toWebGL = function(A) {
-    // TO DO
-};
-
-/****************
- *  OPERATIONS  *
- ****************/
-Matrix.add3x3 = function(A, B) {
+/* ************** *
+ *   OPERATIONS   *
+ * ************** */
+Matrix3.add = function(A, B) {
     for(var i=0 ; i < 9; i++)
         A[i] += B[i];
     return A;
 };
-
-Matrix.add4x4 = function(A, B) {
-    for(var i=0 ; i < 16; i++)
-        A[i] += B[i];
-    return A;
-};
-
-Matrix.subtract3x3 = function(A, B) {
+Matrix3.subtract = function(A, B) {
     for(var i=0 ; i < 9; i++)
         A[i] -= B[i];
     return A;
 };
-
-Matrix.subtract4x4 = function(A, B) {
-    for(var i=0 ; i < 16; i++)
-        A[i] -= B[i];
-    return A;
-};
-
-Matrix.scalarMultiply = function(A, lamda) {
+Matrix3.scalarMultiply = function(A, lamda) {
     for(var i=0 ; i < 9; i++)
         A[i] *= lamda;
     return A;
 };
-
-Matrix.multiply3x3 = function(A, B) {
+Matrix3.multiply = function(A, B) {
     var mtmp = [];
     mtmp[0] = A[0]*B[0] + A[1]*B[3] + A[2]*B[6];
     mtmp[1] = A[0]*B[1] + A[1]*B[4] + A[2]*B[7];
@@ -88,8 +60,91 @@ Matrix.multiply3x3 = function(A, B) {
     mtmp[8] = A[6]*B[2] + A[7]*B[5] + A[8]*B[8];
     return mtmp;
 };
+Matrix3.determinant = function(A) {
+    return  ( A[0] * (A[4]*A[8] - A[5]*A[7]) ) - 
+            ( A[1] * (A[3]*A[8] - A[5]*A[6]) ) +
+            ( A[2] * (A[3]*A[7] - A[4]*A[6]) );
+};
+Matrix3.transpose = function(A) {
+    var mtmp = [];
+    mtmp[0] = A[0];
+    mtmp[1] = A[3];
+    mtmp[2] = A[6];
+    mtmp[3] = A[1];
+    mtmp[4] = A[4];
+    mtmp[5] = A[7];
+    mtmp[6] = A[2];
+    mtmp[7] = A[5];
+    mtmp[8] = A[8];
+    return mtmp;
+    /* WHY DOES THIS NOT WORK - TEST FAILS!! *
+    var mtmp = Matrix3.setTo(A);
+    mtmp[1] = A[3];
+    mtmp[3] = A[1];
+    mtmp[2] = A[6];
+    mtmp[6] = A[2];    
+    mtmp[5] = A[7];
+    mtmp[7] = A[5];
+    return mtmp;
+    */
+};
+Matrix3.adjugate = function(A) {
+    /* adjugate matrix is transpose of cofactor matrix */
+    var mcf = []; // matrix of cofactors
+    mcf[0] = +1 * ( (A[4]*A[8]) - (A[5]*A[7]) );
+    mcf[1] = -1 * ( (A[3]*A[8]) - (A[5]*A[6]) );
+    mcf[2] = +1 * ( (A[3]*A[7]) - (A[4]*A[6]) );
+    mcf[3] = -1 * ( (A[1]*A[8]) - (A[2]*A[7]) );
+    mcf[4] = +1 * ( (A[0]*A[8]) - (A[2]*A[6]) );
+    mcf[5] = -1 * ( (A[0]*A[7]) - (A[1]*A[6]) );    
+    mcf[6] = +1 * ( (A[1]*A[5]) - (A[2]*A[4]) );
+    mcf[7] = -1 * ( (A[0]*A[5]) - (A[2]*A[3]) );
+    mcf[8] = +1 * ( (A[0]*A[4]) - (A[1]*A[3]) );
+    return Matrix3.transpose(mcf);  
+};
+Matrix3.invert = function(A) {
+    var aj = Matrix3.adjugate(A);
+    var det = Matrix3.determinant(A);
+    return Matrix3.scalarMultiply(aj, 1 / det);
+};
 
-Matrix.multiply4x4 = function(A, B) {
+/* ***************************** MATRIX 4x4 ******************************** */
+var Matrix4 = {}; 
+/* ********************* *
+ *   FACTORY FUNCTIONS   *
+ * ********************* */
+Matrix4.setTo = function(A) {
+    return A;
+};
+Matrix4.toIdentity = function() {
+    return [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+};  
+Matrix4.toZero = function() {
+    return [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0];
+};
+Matrix4.toOnes = function() {
+   return [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1];
+};
+
+/* ************** *
+ *   OPERATIONS   *
+ * ************** */
+Matrix4.add = function(A, B) {
+    for(var i=0 ; i < 16; i++)
+        A[i] += B[i];
+    return A;
+};
+Matrix4.subtract = function(A, B) {
+    for(var i=0 ; i < 16; i++)
+        A[i] -= B[i];
+    return A;
+};
+Matrix4.scalarMultiply = function(A, lamda) {
+    for(var i=0 ; i < 16; i++)
+        A[i] *= lamda;
+    return A;
+};
+Matrix4.multiply = function(A, B) {
     var mtmp = [];
     mtmp[0]  = A[0]*B[0]  + A[1]*B[4]  + A[2]*B[8]   + A[3]*B[12];
     mtmp[1]  = A[0]*B[1]  + A[1]*B[5]  + A[2]*B[9]   + A[3]*B[13];
@@ -112,50 +167,90 @@ Matrix.multiply4x4 = function(A, B) {
     mtmp[15] = A[12]*B[3] + A[13]*B[7] + A[14]*B[11] + A[15]*B[15];
     return mtmp;
 };
-
-Matrix.determinant3x3 = function(A) {
-    return  ( A[0] * (A[4]*A[8] - A[5]*A[7]) ) - 
-            ( A[1] * (A[3]*A[8] - A[5]*A[6]) ) +
-            ( A[2] * (A[3]*A[7] - A[4]*A[6]) );
+Matrix4.determinant = function(A) {  
+    var minor0 = Matrix3.determinant( [ A[5],A[6],A[7], A[9],A[10],A[11], A[13],A[14],A[15] ] );
+    var minor1 = Matrix3.determinant( [ A[4],A[6],A[7], A[8],A[10],A[11], A[12],A[14],A[15] ] );
+    var minor2 = Matrix3.determinant( [ A[4],A[5],A[7], A[8],A[9],A[11],  A[12],A[13],A[15] ] );
+    var minor3 = Matrix3.determinant( [ A[4],A[5],A[6], A[8],A[9],A[10],  A[12],A[13],A[14] ] );
+    return ( (A[0]*minor0) - (A[1]*minor1) + (A[2]*minor2) - (A[3]*minor3) );
 };
-
-/* THE BELOW ARE ALL STILL 3X3 */
-Matrix.transpose3x3 = function(A) {
-    var mtmp = A;
-    mtmp[1] = A[3];
-    mtmp[3] = A[1];
-    mtmp[2] = A[6];
-    mtmp[6] = A[2];    
-    mtmp[5] = A[7];
-    mtmp[7] = A[5];
+Matrix4.transpose = function(A) {
+    var mtmp = [];
+    mtmp[0] = A[0];
+    mtmp[1] = A[4];
+    mtmp[2] = A[8];
+    mtmp[3] = A[12];
+    mtmp[4] = A[1];
+    mtmp[5] = A[5];
+    mtmp[6] = A[9];
+    mtmp[7] = A[13];
+    mtmp[8] = A[2];
+    mtmp[9] = A[6];
+    mtmp[10] = A[10];
+    mtmp[11] = A[14];
+    mtmp[12] = A[3];
+    mtmp[13] = A[7];
+    mtmp[14] = A[11];
+    mtmp[15] = A[15];
+    /*
+    //WHY DOESN'T THIS WORK - TEST FAILS 
+    var mtmp = Matrix4.setTo(A);
+    mtmp[1] = A[4];
+    mtmp[4] = A[1];
+    mtmp[2] = A[8];
+    mtmp[8] = A[2];    
+    mtmp[3] = A[12];
+    mtmp[12] = A[3];
+    mtmp[6] = A[9];
+    mtmp[9] = A[6];
+    mtmp[7] = A[13];
+    mtmp[13] = A[7];    
+    mtmp[11] = A[14];
+    mtmp[14] = A[11];
+    */
     return mtmp;
 };
-
-Matrix.ajugate = function(A) {
-    var At = Matrix.transpose(A);
-    var mcfA = []; // matrix of cofactors
-    mcfA[0] = (At[4] * At[8]) - (At[5] * At[7]);
-    mcfA[1] = (At[3] * At[8]) - (At[5] * At[6]);
-    mcfA[2] = (At[3] * At[7]) - (At[4] * At[6]);
-    mcfA[3] = (At[1] * At[8]) - (At[2] * At[7]);
-    mcfA[4] = (At[0] * At[8]) - (At[2] * At[6]);
-    mcfA[5] = (At[0] * At[7]) - (At[1] * At[6]);    
-    mcfA[6] = (At[1] * At[5]) - (At[2] * At[4]);
-    mcfA[7] = (At[0] * At[5]) - (At[2] * At[3]);
-    mcfA[8] = (At[0] * At[4]) - (At[1] * At[3]);
-    var mask = [+1, -1, +1, -1, +1, -1, +1, -1, +1];
-    return Matrix.scalarMultiply(A, mask);
+Matrix4.adjugate = function(A) {
+    /* adjugate matrix is transpose of cofactor matrix */
+    var mcf = []; // matrix of cofactors  
+    mcf[0] = +1 * Matrix3.determinant([A[5],A[6],A[7],A[9],A[10],A[11],A[13],A[14],A[15]]);
+    mcf[1] = -1 * Matrix3.determinant([A[4],A[6],A[7],A[8],A[10],A[11],A[12],A[14],A[15]]);
+    mcf[2] = +1 * Matrix3.determinant([A[4],A[5],A[7],A[8],A[9],A[11],A[12],A[13],A[15]]);
+    mcf[3] = -1 * Matrix3.determinant([A[4],A[5],A[6],A[8],A[9],A[10],A[12],A[13],A[14]]);  
+    mcf[4] = -1 * Matrix3.determinant([A[1],A[2],A[3],A[9],A[10],A[11],A[13],A[14],A[15]]);
+    mcf[5] = +1 * Matrix3.determinant([A[0],A[2],A[3],A[8],A[10],A[11],A[12],A[14],A[15]]);
+    mcf[6] = -1 * Matrix3.determinant([A[0],A[1],A[3],A[8],A[9],A[11],A[12],A[13],A[15]]);
+    mcf[7] = +1 * Matrix3.determinant([A[0],A[1],A[2],A[8],A[9],A[10],A[12],A[13],A[14]]);   
+    mcf[8]  = +1 * Matrix3.determinant([A[1],A[2],A[3],A[5],A[6],A[7],A[13],A[14],A[15]]);
+    mcf[9]  = -1 * Matrix3.determinant([A[0],A[2],A[3],A[4],A[6],A[7],A[12],A[14],A[15]]);
+    mcf[10] = +1 * Matrix3.determinant([A[0],A[1],A[3],A[4],A[5],A[7],A[12],A[13],A[15]]);
+    mcf[11] = -1 * Matrix3.determinant([A[0],A[1],A[2],A[4],A[5],A[6],A[12],A[13],A[14]]);   
+    mcf[12] = -1 * Matrix3.determinant([A[1],A[2],A[3],A[5],A[6],A[7],A[9],A[10],A[11]]);
+    mcf[13] = +1 * Matrix3.determinant([A[0],A[2],A[3],A[4],A[6],A[7],A[8],A[10],A[11]]);
+    mcf[14] = -1 * Matrix3.determinant([A[0],A[1],A[3],A[4],A[5],A[7],A[8],A[9],A[11]]);
+    mcf[15] = +1 * Matrix3.determinant([A[0],A[1],A[2],A[4],A[5],A[6],A[8],A[9],A[10]]);
+    return Matrix4.transpose(mcf);  
+};
+Matrix4.invert = function(A) {
+    var aj = Matrix4.adjugate(A);
+    var det = Matrix4.determinant(A);
+    return Matrix4.scalarMultiply(aj, 1 / det);
 };
 
-Matrix.invert = function(A) {
-    var aj = Matrix.ajugate(A);
-    var det = Matrix.determinant(A);
-    return Matrix.scalarMultiply(aj, 1 / det);
+/* ********************* GENERAL HELPER FUNCTIONS ************************** */
+var Matrix = {};
+/** 
+ * Matrix.embed
+ * @param {Matrix3} A3x3 expects 3x3 matrix in flattened array 
+ * @return {Matrix4} the 3x3 matrix embeded in top L corner of a 4x4 identity 
+ */
+Matrix.embed = function(A3x3) {
+    var A4x4 = Matrix4.toIdentity();
+    A4x4[0] = A3x3[0];  A4x4[1] = A3x3[1];  A4x4[2]  = A3x3[2]; 
+    A4x4[4] = A3x3[3];  A4x4[5] = A3x3[4];  A4x4[6]  = A3x3[5];
+    A4x4[8] = A3x3[6];  A4x4[9] = A3x3[7];  A4x4[10] = A3x3[8];
+    return A4x4;
 };
-
-/******************************
- *  GENERAL HELPER FUNCTIONS  *
- ******************************/
 Matrix.equals = function(A, B) {
     var i = 0, EPS = 1E-5, N = A.length;
     var valid = B.length === N ? true : false; 
@@ -165,7 +260,6 @@ Matrix.equals = function(A, B) {
     }
     return valid;
 };
-
 Matrix.print = function(A, sep) {
     var N = A.length == 16 ? 4 : 3;
     sep = typeof sep === 'undefined' ? '</br>' : sep;
@@ -176,10 +270,5 @@ Matrix.print = function(A, sep) {
         ms += sep;
     }
     return ms;
-};
-
-Matrix.toString = function(A) {
-    // TO DO    - does it make sense to have a toString method anymore?
-    //          - should I simply rename print?
 };
 
