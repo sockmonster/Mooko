@@ -14,9 +14,6 @@ var Matrix3 = {};
 /* ********************* *
  *   FACTORY FUNCTIONS   *
  * ********************* */
-Matrix3.setTo = function(A) {
-    return A;
-};
 Matrix3.toIdentity = function() {
     return [1,0,0, 0,1,0, 0,0,1];
 };  
@@ -77,16 +74,6 @@ Matrix3.transpose = function(A) {
     mtmp[7] = A[5];
     mtmp[8] = A[8];
     return mtmp;
-    /* WHY DOES THIS NOT WORK - TEST FAILS!! *
-    var mtmp = Matrix3.setTo(A);
-    mtmp[1] = A[3];
-    mtmp[3] = A[1];
-    mtmp[2] = A[6];
-    mtmp[6] = A[2];    
-    mtmp[5] = A[7];
-    mtmp[7] = A[5];
-    return mtmp;
-    */
 };
 Matrix3.adjugate = function(A) {
     /* adjugate matrix is transpose of cofactor matrix */
@@ -113,9 +100,6 @@ var Matrix4 = {};
 /* ********************* *
  *   FACTORY FUNCTIONS   *
  * ********************* */
-Matrix4.setTo = function(A) {
-    return A;
-};
 Matrix4.toIdentity = function() {
     return [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
 };  
@@ -192,22 +176,6 @@ Matrix4.transpose = function(A) {
     mtmp[13] = A[7];
     mtmp[14] = A[11];
     mtmp[15] = A[15];
-    /*
-    //WHY DOESN'T THIS WORK - TEST FAILS 
-    var mtmp = Matrix4.setTo(A);
-    mtmp[1] = A[4];
-    mtmp[4] = A[1];
-    mtmp[2] = A[8];
-    mtmp[8] = A[2];    
-    mtmp[3] = A[12];
-    mtmp[12] = A[3];
-    mtmp[6] = A[9];
-    mtmp[9] = A[6];
-    mtmp[7] = A[13];
-    mtmp[13] = A[7];    
-    mtmp[11] = A[14];
-    mtmp[14] = A[11];
-    */
     return mtmp;
 };
 Matrix4.adjugate = function(A) {

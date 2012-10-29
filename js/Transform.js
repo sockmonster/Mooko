@@ -1,36 +1,53 @@
-// Qu/  could many Transform objects cause efficiency issues?
 // Qu/  is there an easier way of "including" a .js file than writing js 
 //      to embed into html doc?
 
-var Transform  = function() {
-    var AT = [];
+// Useful lecture notes from a Uni course on 3D graphics/OpenGL/Linear Algebra 
+// http://people.cs.clemson.edu/~dhouse/courses/401/notes/affines-matrices.pdf
+
+var Transform  = function() 
+{
+    var AT = Matrix4.toIdentity(); // 4x4
     
-    this.scale = function(lamda)
-    {
-        var S = [lamda,0,0,0, 0,lamda,0,0, 0,0,lamda,0, 0,0,0,lamda]
-        Matrix.multiply4x4(AT, S);
-    }
+    this.pos = [0,0];
+    this.rot = 0;
+    this.scale = 0;
     
-    this.translate = function(x, y)
-    {
-        var T = Matrix.toIdentity();
-        R[3]  = x;
-        R[7]  = y;
-        Matrix.multiply4x4(AT, T);
-    }
+    this.scaleTo = function(lamda) {
+        this.scale = lamda;
+        this.updateScaleRot();
+    };
+    this.scaleBy = function(lamda) {
+        this.scale *= lamda;
+        this.updateScaleRot();
+    };
     
-    this.rotate = function(theta)
-    {
-        // Assume clockwise rotation about origin
-        var c = Math.cos(theta);
-        var s = Math.sin(theta);
+    this.translateTo = function(x, y) {
+        AT[3] = x;
+        AT[7] = y; 
+    };
+    this.translateBy = function(x, y) {
+        AT[3] += x;
+        AT[7] += y; 
+    };
         
-        var R = Matrix.toIdentity();
-        R[0] = c;
-        R[1] = s;
-        R[4] = -s;
-        R[5] = c;
-        
-        AT = Matrix.multiply4x4(AT, R);
-    }
-}
+    this.rotateTo = function(theta) {
+        this.rot = theta;
+        this.updateScaleRot();
+    };
+    this.rotateBy = function(theta) {
+        this.rot += theta;
+        this.updateScaleRot();
+    };
+    
+    /** this.updateScaleRot: updates the scale-rotation submatrix in Affine Transform */
+    this.updateScaleRot = function() {
+        AT[0] = this.scale * Math.cos(this.rot);
+        AT[1] = -Math.sin(this.rot);
+        AT[4] = Math.sin(this.rot);
+        AT[5] = this.scale * Math.cos(this.rot);
+    };
+
+    this.toWebGL = function(A) {
+        return this.AT;
+    };
+};
