@@ -32,17 +32,17 @@ Matrix3.add = function(A, B) {
         A[i] += B[i];
     return A;
 };
-Matrix3.subtract = function(A, B) {
+Matrix3.sub = function(A, B) {
     for(var i=0 ; i < 9; i++)
         A[i] -= B[i];
     return A;
 };
-Matrix3.scalarMultiply = function(A, lamda) {
+Matrix3.scalarMul = function(A, lamda) {
     for(var i=0 ; i < 9; i++)
         A[i] *= lamda;
     return A;
 };
-Matrix3.multiply = function(A, B) {
+Matrix3.mul = function(A, B) {
     var mtmp = [];
     mtmp[0] = A[0]*B[0] + A[1]*B[3] + A[2]*B[6];
     mtmp[1] = A[0]*B[1] + A[1]*B[4] + A[2]*B[7];
@@ -57,7 +57,7 @@ Matrix3.multiply = function(A, B) {
     mtmp[8] = A[6]*B[2] + A[7]*B[5] + A[8]*B[8];
     return mtmp;
 };
-Matrix3.determinant = function(A) {
+Matrix3.det = function(A) {
     return  ( A[0] * (A[4]*A[8] - A[5]*A[7]) ) - 
             ( A[1] * (A[3]*A[8] - A[5]*A[6]) ) +
             ( A[2] * (A[3]*A[7] - A[4]*A[6]) );
@@ -91,8 +91,8 @@ Matrix3.adjugate = function(A) {
 };
 Matrix3.invert = function(A) {
     var aj = Matrix3.adjugate(A);
-    var det = Matrix3.determinant(A);
-    return Matrix3.scalarMultiply(aj, 1 / det);
+    var det = Matrix3.det(A);
+    return Matrix3.scalarMul(aj, 1 / det);
 };
 
 /* ***************************** MATRIX 4x4 ******************************** */
@@ -118,17 +118,17 @@ Matrix4.add = function(A, B) {
         A[i] += B[i];
     return A;
 };
-Matrix4.subtract = function(A, B) {
+Matrix4.sub = function(A, B) {
     for(var i=0 ; i < 16; i++)
         A[i] -= B[i];
     return A;
 };
-Matrix4.scalarMultiply = function(A, lamda) {
+Matrix4.scalarMul = function(A, lamda) {
     for(var i=0 ; i < 16; i++)
         A[i] *= lamda;
     return A;
 };
-Matrix4.multiply = function(A, B) {
+Matrix4.mul = function(A, B) {
     var mtmp = [];
     mtmp[0]  = A[0]*B[0]  + A[1]*B[4]  + A[2]*B[8]   + A[3]*B[12];
     mtmp[1]  = A[0]*B[1]  + A[1]*B[5]  + A[2]*B[9]   + A[3]*B[13];
@@ -151,11 +151,11 @@ Matrix4.multiply = function(A, B) {
     mtmp[15] = A[12]*B[3] + A[13]*B[7] + A[14]*B[11] + A[15]*B[15];
     return mtmp;
 };
-Matrix4.determinant = function(A) {  
-    var minor0 = Matrix3.determinant( [ A[5],A[6],A[7], A[9],A[10],A[11], A[13],A[14],A[15] ] );
-    var minor1 = Matrix3.determinant( [ A[4],A[6],A[7], A[8],A[10],A[11], A[12],A[14],A[15] ] );
-    var minor2 = Matrix3.determinant( [ A[4],A[5],A[7], A[8],A[9],A[11],  A[12],A[13],A[15] ] );
-    var minor3 = Matrix3.determinant( [ A[4],A[5],A[6], A[8],A[9],A[10],  A[12],A[13],A[14] ] );
+Matrix4.det = function(A) {  
+    var minor0 = Matrix3.det( [ A[5],A[6],A[7], A[9],A[10],A[11], A[13],A[14],A[15] ] );
+    var minor1 = Matrix3.det( [ A[4],A[6],A[7], A[8],A[10],A[11], A[12],A[14],A[15] ] );
+    var minor2 = Matrix3.det( [ A[4],A[5],A[7], A[8],A[9],A[11],  A[12],A[13],A[15] ] );
+    var minor3 = Matrix3.det( [ A[4],A[5],A[6], A[8],A[9],A[10],  A[12],A[13],A[14] ] );
     return ( (A[0]*minor0) - (A[1]*minor1) + (A[2]*minor2) - (A[3]*minor3) );
 };
 Matrix4.transpose = function(A) {
@@ -181,28 +181,28 @@ Matrix4.transpose = function(A) {
 Matrix4.adjugate = function(A) {
     /* adjugate matrix is transpose of cofactor matrix */
     var mcf = []; // matrix of cofactors  
-    mcf[0] = +1 * Matrix3.determinant([A[5],A[6],A[7],A[9],A[10],A[11],A[13],A[14],A[15]]);
-    mcf[1] = -1 * Matrix3.determinant([A[4],A[6],A[7],A[8],A[10],A[11],A[12],A[14],A[15]]);
-    mcf[2] = +1 * Matrix3.determinant([A[4],A[5],A[7],A[8],A[9],A[11],A[12],A[13],A[15]]);
-    mcf[3] = -1 * Matrix3.determinant([A[4],A[5],A[6],A[8],A[9],A[10],A[12],A[13],A[14]]);  
-    mcf[4] = -1 * Matrix3.determinant([A[1],A[2],A[3],A[9],A[10],A[11],A[13],A[14],A[15]]);
-    mcf[5] = +1 * Matrix3.determinant([A[0],A[2],A[3],A[8],A[10],A[11],A[12],A[14],A[15]]);
-    mcf[6] = -1 * Matrix3.determinant([A[0],A[1],A[3],A[8],A[9],A[11],A[12],A[13],A[15]]);
-    mcf[7] = +1 * Matrix3.determinant([A[0],A[1],A[2],A[8],A[9],A[10],A[12],A[13],A[14]]);   
-    mcf[8]  = +1 * Matrix3.determinant([A[1],A[2],A[3],A[5],A[6],A[7],A[13],A[14],A[15]]);
-    mcf[9]  = -1 * Matrix3.determinant([A[0],A[2],A[3],A[4],A[6],A[7],A[12],A[14],A[15]]);
-    mcf[10] = +1 * Matrix3.determinant([A[0],A[1],A[3],A[4],A[5],A[7],A[12],A[13],A[15]]);
-    mcf[11] = -1 * Matrix3.determinant([A[0],A[1],A[2],A[4],A[5],A[6],A[12],A[13],A[14]]);   
-    mcf[12] = -1 * Matrix3.determinant([A[1],A[2],A[3],A[5],A[6],A[7],A[9],A[10],A[11]]);
-    mcf[13] = +1 * Matrix3.determinant([A[0],A[2],A[3],A[4],A[6],A[7],A[8],A[10],A[11]]);
-    mcf[14] = -1 * Matrix3.determinant([A[0],A[1],A[3],A[4],A[5],A[7],A[8],A[9],A[11]]);
-    mcf[15] = +1 * Matrix3.determinant([A[0],A[1],A[2],A[4],A[5],A[6],A[8],A[9],A[10]]);
+    mcf[0] = +1 * Matrix3.det([A[5],A[6],A[7],A[9],A[10],A[11],A[13],A[14],A[15]]);
+    mcf[1] = -1 * Matrix3.det([A[4],A[6],A[7],A[8],A[10],A[11],A[12],A[14],A[15]]);
+    mcf[2] = +1 * Matrix3.det([A[4],A[5],A[7],A[8],A[9],A[11],A[12],A[13],A[15]]);
+    mcf[3] = -1 * Matrix3.det([A[4],A[5],A[6],A[8],A[9],A[10],A[12],A[13],A[14]]);  
+    mcf[4] = -1 * Matrix3.det([A[1],A[2],A[3],A[9],A[10],A[11],A[13],A[14],A[15]]);
+    mcf[5] = +1 * Matrix3.det([A[0],A[2],A[3],A[8],A[10],A[11],A[12],A[14],A[15]]);
+    mcf[6] = -1 * Matrix3.det([A[0],A[1],A[3],A[8],A[9],A[11],A[12],A[13],A[15]]);
+    mcf[7] = +1 * Matrix3.det([A[0],A[1],A[2],A[8],A[9],A[10],A[12],A[13],A[14]]);   
+    mcf[8]  = +1 * Matrix3.det([A[1],A[2],A[3],A[5],A[6],A[7],A[13],A[14],A[15]]);
+    mcf[9]  = -1 * Matrix3.det([A[0],A[2],A[3],A[4],A[6],A[7],A[12],A[14],A[15]]);
+    mcf[10] = +1 * Matrix3.det([A[0],A[1],A[3],A[4],A[5],A[7],A[12],A[13],A[15]]);
+    mcf[11] = -1 * Matrix3.det([A[0],A[1],A[2],A[4],A[5],A[6],A[12],A[13],A[14]]);   
+    mcf[12] = -1 * Matrix3.det([A[1],A[2],A[3],A[5],A[6],A[7],A[9],A[10],A[11]]);
+    mcf[13] = +1 * Matrix3.det([A[0],A[2],A[3],A[4],A[6],A[7],A[8],A[10],A[11]]);
+    mcf[14] = -1 * Matrix3.det([A[0],A[1],A[3],A[4],A[5],A[7],A[8],A[9],A[11]]);
+    mcf[15] = +1 * Matrix3.det([A[0],A[1],A[2],A[4],A[5],A[6],A[8],A[9],A[10]]);
     return Matrix4.transpose(mcf);  
 };
 Matrix4.invert = function(A) {
     var aj = Matrix4.adjugate(A);
-    var det = Matrix4.determinant(A);
-    return Matrix4.scalarMultiply(aj, 1 / det);
+    var det = Matrix4.det(A);
+    return Matrix4.scalarMul(aj, 1 / det);
 };
 
 /* ********************* GENERAL HELPER FUNCTIONS ************************** */
