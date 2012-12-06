@@ -3,11 +3,18 @@
  * 
  * > We create variables to attach our handler functions. 
  * > 3x3 and 4x4 have separate implementations. Treated like 'static' classes.
- * > All matrices stored as flattened arrays.
  * > For efficiency, all functions are entirely mathematical. No safety checking 
  *   is done inside functions. The responsibility is on the programmer to pass 
  *   mathematically sensible parameter values, correctly arranged and formatted.
  *   e.g. invert() asumes the passed matrix is invertible.
+ * > IMPORTANT: All matrices stored as flattened arrays in column major format. 
+ *   So the internal arrangement of every Matrix is the transpose of a 'standard' 
+ *   row-major mathematical arrangement. This is to be WebGL compliant. Any use of
+ *   Matrix classes should bear this in mind when specifying matrices or use the
+ *   transpose function before performing operations.
+ *   e.g. 
+ *      row-major:           A = [a11, a12, a13, a21, a22, a23, a31, a32, a33]
+ *      col-major (WebGL):  At = [a11, a21, a31, a12, a22, a32, a13, a23, a33]
  */
 /* ***************************** MATRIX 3x3 ******************************** */
 var Matrix3 = {}; 
@@ -44,6 +51,19 @@ Matrix3.scalarMul = function(A, lamda) {
 };
 Matrix3.mul = function(A, B) {
     var mtmp = [];
+    // WebGL
+    mtmp[0] = A[0]*B[0] + A[3]*B[1] + A[6]*B[2];
+    mtmp[3] = A[0]*B[3] + A[3]*B[4] + A[6]*B[5];
+    mtmp[6] = A[0]*B[6] + A[3]*B[7] + A[6]*B[8];  
+    
+    mtmp[1] = A[1]*B[0] + A[4]*B[1] + A[7]*B[2];
+    mtmp[4] = A[1]*B[3] + A[4]*B[4] + A[7]*B[5];
+    mtmp[7] = A[1]*B[6] + A[4]*B[7] + A[7]*B[8];
+    
+    mtmp[2] = A[2]*B[0] + A[5]*B[1] + A[8]*B[2];
+    mtmp[5] = A[2]*B[3] + A[5]*B[4] + A[8]*B[5];
+    mtmp[8] = A[2]*B[6] + A[5]*B[7] + A[8]*B[8];
+    /*
     mtmp[0] = A[0]*B[0] + A[1]*B[3] + A[2]*B[6];
     mtmp[1] = A[0]*B[1] + A[1]*B[4] + A[2]*B[7];
     mtmp[2] = A[0]*B[2] + A[1]*B[5] + A[2]*B[8];  
@@ -55,12 +75,19 @@ Matrix3.mul = function(A, B) {
     mtmp[6] = A[6]*B[0] + A[7]*B[3] + A[8]*B[6];
     mtmp[7] = A[6]*B[1] + A[7]*B[4] + A[8]*B[7];
     mtmp[8] = A[6]*B[2] + A[7]*B[5] + A[8]*B[8];
+    */
     return mtmp;
 };
 Matrix3.det = function(A) {
+    // WebGL
+    return  ( A[0] * (A[4]*A[8] - A[5]*A[7]) ) - 
+            ( A[3] * (A[1]*A[8] - A[2]*A[7]) ) +
+            ( A[6] * (A[1]*A[5] - A[2]*A[4]) );
+    /*
     return  ( A[0] * (A[4]*A[8] - A[5]*A[7]) ) - 
             ( A[1] * (A[3]*A[8] - A[5]*A[6]) ) +
             ( A[2] * (A[3]*A[7] - A[4]*A[6]) );
+    */
 };
 Matrix3.transpose = function(A) {
     var mtmp = [];
@@ -79,6 +106,20 @@ Matrix3.adjugate = function(A) {
     /* adjugate matrix is transpose of cofactor matrix */
     var mcf = []; // matrix of cofactors
     mcf[0] = +1 * ( (A[4]*A[8]) - (A[5]*A[7]) );
+    mcf[3] = -1 * ( (A[1]*A[8]) - (A[2]*A[7]) );
+    mcf[6] = +1 * ( (A[1]*A[5]) - (A[2]*A[4]) );
+    mcf[1] = -1 * ( (A[3]*A[8]) - (A[5]*A[6]) );
+    mcf[4] = +1 * ( (A[0]*A[8]) - (A[2]*A[6]) );
+    mcf[7] = -1 * ( (A[0]*A[5]) - (A[2]*A[3]) );
+    mcf[2] = +1 * ( (A[3]*A[7]) - (A[4]*A[6]) );
+    mcf[5] = -1 * ( (A[0]*A[7]) - (A[1]*A[6]) );
+    mcf[8] = +1 * ( (A[0]*A[4]) - (A[1]*A[3]) );
+    /*
+    mcf[2] = +1 * ( (A[3]*A[8]) - (A[5]*A[6]) );
+    mcf[5] = -1 * ( (A[0]*A[8]) - (A[1]*A[6]) );
+    mcf[8] = +1 * ( (A[0]*A[5]) - (A[2]*A[3]) );
+    *//*
+    mcf[0] = +1 * ( (A[4]*A[8]) - (A[5]*A[7]) );
     mcf[1] = -1 * ( (A[3]*A[8]) - (A[5]*A[6]) );
     mcf[2] = +1 * ( (A[3]*A[7]) - (A[4]*A[6]) );
     mcf[3] = -1 * ( (A[1]*A[8]) - (A[2]*A[7]) );
@@ -87,6 +128,7 @@ Matrix3.adjugate = function(A) {
     mcf[6] = +1 * ( (A[1]*A[5]) - (A[2]*A[4]) );
     mcf[7] = -1 * ( (A[0]*A[5]) - (A[2]*A[3]) );
     mcf[8] = +1 * ( (A[0]*A[4]) - (A[1]*A[3]) );
+    */
     return Matrix3.transpose(mcf);  
 };
 Matrix3.invert = function(A) {
