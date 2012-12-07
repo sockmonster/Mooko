@@ -11,9 +11,7 @@
         <script src="../Matrix.js"></script>
         
         <script>
-        
         /* ----------------- Matrix3 TESTS ----------------- */
-
         test("Matrix3.toIdentity()", function() {
             var I = Matrix3.toIdentity();
             ok( Matrix.equals(I, [1,0,0, 0,1,0, 0,0,1]), "I = " + I); 
@@ -133,8 +131,9 @@
             // col-major
             var A = [6,1,0,5, 4,0,6,2, 2,3,4,7, 3,7,8,8];
             var B = [2,6,1,8, 3,7,0,6, 4,0,9,1, 5,8,6,8];
+            var AB = Matrix4.mul(A, B);
             var C = [62,61,104,93, 64,45,90,77, 45,38,44,91, 98,79,136,147];
-            ok( Matrix.equals(Matrix4.mul(A, B), C), "AB = C = " + C);
+            ok( Matrix.equals(AB, C), "AB = " + AB + "C = " + C);
         });
         test("Matrix4.det()", function() {
             /*

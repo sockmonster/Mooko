@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>SceneGraph.js Tests</title>
+        <link rel="stylesheet" href="qunit-1.10.0.css">
+    </head>
+    <body>
+ <div id="qunit"></div>
+        <script src="qunit-1.10.0.js"></script>
+        <script src="../Matrix.js"></script>
+        <script src="../GameObject.js"></script>
+        <script src="../Transform.js"></script>
+        <script src="../Renderer.js"></script>
+        <script>
+        /* ----------------- SceneGraph Tests ----------------- */
+        test("Child-Parent Test", function() {
+            var parent = new GameObject("parent", null);
+            var child = new GameObject("child", parent);
+            child.getLocalTransform().translateTo(10,10);
+            
+            var renderer = new Renderer();
+            renderer.render(parent);
+            
+            alert("LT= " + child.getLocalTransform().getPos());
+            alert("WT= " + child.getWorldTransform().getPos());
+            
+            ok( child.getWorldTransform().getPos()[0] == 10 &&
+                child.getWorldTransform().getPos()[1] == 10 , "test");
+        });
+        
+        test("Child-Parent Test 2", function() {
+            var parent = new GameObject("parent", null);
+            var child = new GameObject("child", parent);
+            child.getLocalTransform().translateTo(10,10);
+            parent.getLocalTransform().translateTo(10,10);
+            
+            var renderer = new Renderer();
+            renderer.render(parent);
+            
+            alert("LT= " + child.getLocalTransform().getPos());
+            alert("WT= " + child.getWorldTransform().getPos());
+            
+            ok( parent.getWorldTransform().getPos()[0] == 10 &&
+                parent.getWorldTransform().getPos()[1] == 10 &&
+                child.getWorldTransform().getPos()[0] == 20 &&
+                child.getWorldTransform().getPos()[1] == 20 , "test");
+        });
+        
+       </script>
+        
+    </body>
+</html>
