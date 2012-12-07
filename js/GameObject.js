@@ -9,9 +9,17 @@ var GameObject = function(name, parent)
     this.Name = name;
     this.Parent = parent;   // a GameObject (node)
     this.Children = [];     // a list of GameObjects
-    this.LocalTransform;
-    this.WorldTransform; 
+    this.LocalTransform = new Transform();
+    this.WorldTransform = new Transform(); 
+    if(this.Parent !== null)
+        this.Parent.addChild(this);
     
+    this.getLocalTransform = function(){
+        return this.LocalTransform;
+    };
+    this.getWorldTransform = function(){
+        return this.WorldTransform;  
+    };
     this.setParent = function(parent) {
         this.Parent = parent; 
     };
@@ -21,12 +29,13 @@ var GameObject = function(name, parent)
     };
     
     this.addChild = function(child) {
+        // TODO: check 'child' is not any of ancestors
         if(child != this && child != this.Parent)
-            this.Children[this.Children.Length] = child;    
+            this.Children[this.Children.length] = child;
     };
     
     this.hasChild = function() {
-        return ( this.Children.Length > 0 );
+        return ( this.Children.length > 0 );
     };
     
     this.hasParent = function() {

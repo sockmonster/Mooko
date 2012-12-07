@@ -1,3 +1,4 @@
+//TODO: Matrix3.equals and Matrix4.equals, that simply just call Matrix.equals!
 /**
  * Matrix3 & Matrix4
  * 
@@ -51,7 +52,7 @@ Matrix3.scalarMul = function(A, lamda) {
 };
 Matrix3.mul = function(A, B) {
     var mtmp = [];
-    // WebGL
+    // col-major
     mtmp[0] = A[0]*B[0] + A[3]*B[1] + A[6]*B[2];
     mtmp[3] = A[0]*B[3] + A[3]*B[4] + A[6]*B[5];
     mtmp[6] = A[0]*B[6] + A[3]*B[7] + A[6]*B[8];  
@@ -64,6 +65,7 @@ Matrix3.mul = function(A, B) {
     mtmp[5] = A[2]*B[3] + A[5]*B[4] + A[8]*B[5];
     mtmp[8] = A[2]*B[6] + A[5]*B[7] + A[8]*B[8];
     /*
+    // row-major
     mtmp[0] = A[0]*B[0] + A[1]*B[3] + A[2]*B[6];
     mtmp[1] = A[0]*B[1] + A[1]*B[4] + A[2]*B[7];
     mtmp[2] = A[0]*B[2] + A[1]*B[5] + A[2]*B[8];  
@@ -79,11 +81,12 @@ Matrix3.mul = function(A, B) {
     return mtmp;
 };
 Matrix3.det = function(A) {
-    // WebGL
+    // col-major
     return  ( A[0] * (A[4]*A[8] - A[5]*A[7]) ) - 
             ( A[3] * (A[1]*A[8] - A[2]*A[7]) ) +
             ( A[6] * (A[1]*A[5] - A[2]*A[4]) );
     /*
+    // row-major
     return  ( A[0] * (A[4]*A[8] - A[5]*A[7]) ) - 
             ( A[1] * (A[3]*A[8] - A[5]*A[6]) ) +
             ( A[2] * (A[3]*A[7] - A[4]*A[6]) );
@@ -104,6 +107,7 @@ Matrix3.transpose = function(A) {
 };
 Matrix3.adjugate = function(A) {
     /* adjugate matrix is transpose of cofactor matrix */
+    // col-major
     var mcf = []; // matrix of cofactors
     mcf[0] = +1 * ( (A[4]*A[8]) - (A[5]*A[7]) );
     mcf[3] = -1 * ( (A[1]*A[8]) - (A[2]*A[7]) );
@@ -115,10 +119,7 @@ Matrix3.adjugate = function(A) {
     mcf[5] = -1 * ( (A[0]*A[7]) - (A[1]*A[6]) );
     mcf[8] = +1 * ( (A[0]*A[4]) - (A[1]*A[3]) );
     /*
-    mcf[2] = +1 * ( (A[3]*A[8]) - (A[5]*A[6]) );
-    mcf[5] = -1 * ( (A[0]*A[8]) - (A[1]*A[6]) );
-    mcf[8] = +1 * ( (A[0]*A[5]) - (A[2]*A[3]) );
-    *//*
+    // row-major
     mcf[0] = +1 * ( (A[4]*A[8]) - (A[5]*A[7]) );
     mcf[1] = -1 * ( (A[3]*A[8]) - (A[5]*A[6]) );
     mcf[2] = +1 * ( (A[3]*A[7]) - (A[4]*A[6]) );
@@ -172,6 +173,28 @@ Matrix4.scalarMul = function(A, lamda) {
 };
 Matrix4.mul = function(A, B) {
     var mtmp = [];
+    // col-major
+    mtmp[0]  = B[0]*A[0]  + B[1]*A[4]  + B[2]*A[8]   + B[3]*A[12];
+    mtmp[1]  = B[0]*A[1]  + B[1]*A[5]  + B[2]*A[9]   + B[3]*A[13];
+    mtmp[2]  = B[0]*A[2]  + B[1]*A[6]  + B[2]*A[10]  + B[3]*A[14];
+    mtmp[3]  = B[0]*A[3]  + B[1]*A[7]  + B[2]*A[11]  + B[3]*A[15];
+    
+    mtmp[4]  = B[4]*A[0]  + B[5]*A[4]  + B[6]*A[8]   + B[7]*A[12];
+    mtmp[5]  = B[4]*A[1]  + B[5]*A[5]  + B[6]*A[9]   + B[7]*A[13];
+    mtmp[6]  = B[4]*A[2]  + B[5]*A[6]  + B[6]*A[10]  + B[7]*A[14];
+    mtmp[7]  = B[4]*A[3]  + B[5]*A[7]  + B[6]*A[11]  + B[7]*A[15];
+    
+    mtmp[8]  = B[8]*A[0]  + B[9]*A[4]  + B[10]*A[8]  + B[11]*A[12];
+    mtmp[9]  = B[8]*A[1]  + B[9]*A[5]  + B[10]*A[9]  + B[11]*A[13];
+    mtmp[10] = B[8]*A[2]  + B[9]*A[6]  + B[10]*A[10] + B[11]*A[14];
+    mtmp[11] = B[8]*A[3]  + B[9]*A[7]  + B[10]*A[11] + B[11]*A[15];
+    
+    mtmp[12] = B[12]*A[0] + B[13]*A[4] + B[14]*A[8]  + B[15]*A[12];
+    mtmp[13] = B[12]*A[1] + B[13]*A[5] + B[14]*A[9]  + B[15]*A[13];
+    mtmp[14] = B[12]*A[2] + B[13]*A[6] + B[14]*A[10] + B[15]*A[14];
+    mtmp[15] = B[12]*A[3] + B[13]*A[7] + B[14]*A[11] + B[15]*A[15];
+    /*
+    //row-major
     mtmp[0]  = A[0]*B[0]  + A[1]*B[4]  + A[2]*B[8]   + A[3]*B[12];
     mtmp[1]  = A[0]*B[1]  + A[1]*B[5]  + A[2]*B[9]   + A[3]*B[13];
     mtmp[2]  = A[0]*B[2]  + A[1]*B[6]  + A[2]*B[10]  + A[3]*B[14];
@@ -191,6 +214,8 @@ Matrix4.mul = function(A, B) {
     mtmp[13] = A[12]*B[1] + A[13]*B[5] + A[14]*B[9]  + A[15]*B[13];
     mtmp[14] = A[12]*B[2] + A[13]*B[6] + A[14]*B[10] + A[15]*B[14];
     mtmp[15] = A[12]*B[3] + A[13]*B[7] + A[14]*B[11] + A[15]*B[15];
+    */
+    
     return mtmp;
 };
 Matrix4.det = function(A) {  
@@ -242,6 +267,7 @@ Matrix4.adjugate = function(A) {
     return Matrix4.transpose(mcf);  
 };
 Matrix4.invert = function(A) {
+    // TODO: convert to col-major
     var aj = Matrix4.adjugate(A);
     var det = Matrix4.det(A);
     return Matrix4.scalarMul(aj, 1 / det);
